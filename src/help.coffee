@@ -73,7 +73,11 @@ module.exports = (robot) ->
 
     if replyInPrivate and msg.message?.user?.name?
       msg.reply 'replied to you in private!'
-      robot.send {room: msg.message?.user?.name}, emit
+      # Be Compatible with newer slack api client (v4 and up)
+      if robot.adapter?.client?.chat?.postMessage?
+        robot.adapter.client.chat.postMessage msg.message?.user?.room, emit
+      else
+        robot.send {room: msg.message?.user?.name}, emit
     else
       msg.reply emit
 
